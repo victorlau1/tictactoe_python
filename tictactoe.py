@@ -21,35 +21,39 @@ def main(previous = 0):
       continue
   
   game_count = 0 + previous
-  newGame = Board.matrix
+  game_board = Board.matrix
   game = True
-  currentPlayer = 0
+  current_player = 0
 
   print('Starting Game: ', game_count)
 
   #Game Runs On Loop Until Over
   while(game):
-    print('Current Player is Player: ',max_players[currentPlayer])
-    print(newGame)
+    print('Current Player is Player: ',max_players[current_player])
+    for row in game_board:
+      print(row)
     
     invalidPosition = True
 
 
     while(invalidPosition):
       position = inputPosition()
-      print(position)
-      invalidPosition = existingToken(position, newGame)
+      print('Position already exists for, please try again ', position)
+      invalidPosition = existingToken(position, game_board)
       if not invalidPosition:
-        print('player ', currentPlayer,' placed at ', position[0], position[1])
-        newGame = placeToken(position, newGame, currentPlayer)
-        currentPlayer = changePlayer(currentPlayer)
-    
+        print('player ', current_player, 'placed at ', position[0], position[1])
+        game_board = placeToken(position, game_board, current_player)       
+        current_player = changePlayer(current_player)    
+        winner = diagonal(game_board) and horizontal(game_board) and veritical(game_board)
 
-  newgame = str(input('Would you like to start a new game?'))
-  if newgame.upper() == 'Y':
-    main(game_count + 1)
-  else:
-    sys.exit()
+  if(winner):
+    start_game = str(input('Would you like to start a new game?'))
+
+    if (start_game.upper() == 'Y'):
+      game_count = game_count + 1
+    else:
+      print('Good Bye!')
+      sys.exit()
 
 def inputPosition():
   """Handles user input for inputting in positions
@@ -81,8 +85,8 @@ def userInput(x, y):
     x (int): x position on the board
     y (int): y position on the board  
   """
-  if newGame[x][y] == 0:
-    newGame[x][y] = 1
+  if game_board[x][y] == 0:
+    game_board[x][y] = 1
   else:
     print('Try Again:', player) 
 
@@ -134,45 +138,44 @@ def horizontal(board):
       return True
   return False
 
-def changePlayer(currentPlayer):
-  """Changes players from currentPlayer to other player
+def changePlayer(current_player):
+  """Changes players from current player to other player
   
   Args:
-    currentPlayer (int): currentPlayer 
-  
+    current_player (int): current player tic tact toe  
   Returns:
     int: returns other player position
   """
 
-  return int(not currentPlayer)
+  return int(not current_player)
 
-def createToken(currentPlayer):
+def createToken(current_player):
   """Returns a token that can be used to placed on the board
 
   Args:
-    currentPlayer (int): current player number 
+    current_player (int): current player number 
   Returns:
     token (string): string depending on player number
   """
   
-  if currentPlayer == 1:
+  if current_player == 1:
     token = 'X'
   else:
     token = 'O'
   return token
 
-def placeToken(position, board, currentPlayer):
+def placeToken(position, board, current_player):
   """ Places the token within the currentgame state board for current player
 
   Args:
-    currentPlayer (int) : the current player's turn
+    current_player (int) : the current player's turn
     board (array) : current game board (array of arrays)
     position (tuple): x and y position
   Return:
     board (array): new board with token placed
   """
 
-  board[position[0]][position[1]] = createToken(currentPlayer)
+  board[position[0]][position[1]] = createToken(current_player)  
   return board
 
 class Board():
